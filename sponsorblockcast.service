@@ -1,0 +1,8 @@
+[Unit]
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/sponsorblockcast
+
+[Install]
+WantedBy=multi-user.target
