@@ -1,6 +1,7 @@
 #!/bin/sh
 
 POLLINTERVAL=30
+SCANINTERVAL=300
 SBCDIR="/tmp/sponsorblockcast"
 [ -e "$SBCDIR" ] && rm -r "$SBCDIR"
 mkdir $SBCDIR
@@ -45,7 +46,7 @@ listChromecasts() {
 
 scanChromecasts() {
   currentTime=$(date +%s)
-  if [ -z "$lastScan" ] || [ "$lastScan" -lt "$((currentTime - 300))" ]
+  if [ -z "$lastScan" ] || [ "$lastScan" -lt "$((currentTime - SCANINTERVAL))" ]
   then
     listChromecasts > devices
     lastScan=$currentTime
