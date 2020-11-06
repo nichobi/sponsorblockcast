@@ -24,6 +24,18 @@ You can configure the following parameters by setting the appropriate enviroment
 * `SCBSCANINTERVAL` - Time to wait between each scan for available Chromecast (default=`300`)
 * `SCBDIR` - Directory where temporary files are stored (default=`/tmp/sponsorblockcast`)
 
+To run from the terminal with custom parameters you can use `env` like so:
+`env SCBSCANINTERVAL=10 SCBPOLLINTERVAL=100 sponsorblockcast`
+
+To modify the variables when running as a systemd service, create an override for the service with:  
+`sudo systemctl edit sponsorblockcast.service`  
+This will open a blank override file where you can specify Environment values like so:
+```
+[Service]
+Environment="SCBPOLLINTERVAL=10"
+Environment="SCBSCANINTERVAL=100"
+```
+
 ## Differences from CastBlock
 * Regular scans to find new Chromecasts while the script is running
 * Allows configuring parameters
