@@ -17,3 +17,10 @@ The script will scan for all Chromecasts on the LAN (rescanning every 5 minutes)
 
 ## Usage
 Run `sponsorblockcast` from a terminal or activate the service with `systemd enable --now sponsorblockcast`
+
+## Configuration
+You can configure the following parameters by setting the appropriate enviroment values:
+* `SCBPOLLINTERVAL` - Time to wait between checking Chromecast status (default=`30`)
+* `SCBSCANINTERVAL` - Time to wait between each scan for available Chromecast (default=`300`)
+* `SCBDIR` - Directory where temporary files are stored (default=`/tmp/sponsorblockcast`)
+

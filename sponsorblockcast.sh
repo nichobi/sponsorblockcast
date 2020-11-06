@@ -1,8 +1,9 @@
 #!/bin/sh
 
-POLLINTERVAL=30
-SCANINTERVAL=300
-SBCDIR="/tmp/sponsorblockcast"
+SBCPOLLINTERVAL="${SBCPOLLINTERVAL:-30}"
+SBCSCANINTERVAL="${SCANINTERVAL:-300}"
+SBCDIR="${SBCDIR:-/tmp/sponsorblockcast}"
+
 [ -e "$SBCDIR" ] && rm -r "$SBCDIR"
 mkdir $SBCDIR
 cd $SBCDIR || exit
@@ -46,7 +47,7 @@ listChromecasts() {
 
 scanChromecasts() {
   currentTime=$(date +%s)
-  if [ -z "$lastScan" ] || [ "$lastScan" -lt "$((currentTime - SCANINTERVAL))" ]
+  if [ -z "$lastScan" ] || [ "$lastScan" -lt "$((currentTime - SBCSCANINTERVAL))" ]
   then
     listChromecasts > devices
     lastScan=$currentTime
@@ -56,7 +57,7 @@ scanChromecasts() {
 while :
 do
   scanChromecasts
-  maxsleeptime=$POLLINTERVAL
+  maxsleeptime=$SBCPOLLINTERVAL
   while read -r uuid; do
     echo checking "$uuid"
     check "$uuid"
