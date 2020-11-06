@@ -3,6 +3,10 @@
 SBCPOLLINTERVAL="${SBCPOLLINTERVAL:-30}"
 SBCSCANINTERVAL="${SCANINTERVAL:-300}"
 SBCDIR="${SBCDIR:-/tmp/sponsorblockcast}"
+SBCCATEGORIES="${SBCCATEGORIES:-sponsor}"
+
+# Format categories for curl by creating a json array and escaping the brackets
+categories='\'$(echo $SBCCATEGORIES | jq -cR 'split(" ")' | sed -r 's/]/\\]/g')
 
 [ -e "$SBCDIR" ] && rm -r "$SBCDIR"
 mkdir $SBCDIR
@@ -10,9 +14,11 @@ cd $SBCDIR || exit
 
 getSegments () {
   id=$1
-  [ ! -f "$videoid".segments ] && \
-    curl -fs "https://sponsor.ajay.app/api/skipSegments?videoID=$id" |\
-    jq -r '.[].segment|join(" ")' > "$videoid".segments
+  if [ ! -f "$id".segments ]
+  then
+    curl -fs "https://sponsor.ajay.app/api/skipSegments?videoID=$id&categories=$categories" |\
+    jq -r '.[] | (.segment|join(" ")) + " " + .category' > "$id.segments"
+  fi
 }
 
 check () {
@@ -24,9 +30,10 @@ check () {
   echo Chromecast is "$state"
   getSegments "$videoid"
   progress=$(echo "$status" | grep -oP 'remaining=\K[^s]+')
-  while read -r start end; do
+  while read -r start end category; do
     if [ "$(echo "($progress > $start) && ($progress < ($end - 5))" | bc)" -eq 1 ]
     then
+      echo "Skipping $category from $start -> $end"
       go-chromecast -u "$uuid" seek-to "$end"
     else
       delta=$(echo "$start - $progress" | bc)

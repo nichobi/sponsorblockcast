@@ -23,22 +23,27 @@ You can configure the following parameters by setting the appropriate enviroment
 * `SCBPOLLINTERVAL` - Time to wait between checking Chromecast status (default=`30`)
 * `SCBSCANINTERVAL` - Time to wait between each scan for available Chromecast (default=`300`)
 * `SCBDIR` - Directory where temporary files are stored (default=`/tmp/sponsorblockcast`)
+* `SCBCATEGORIES` - Space-separated SponsorBlock categories to skip, see [category list](https://github.com/ajayyy/SponsorBlock/blob/master/config.json.example) (default=`sponsor`)
 
 To run from the terminal with custom parameters you can use `env` like so:
-`env SCBSCANINTERVAL=10 SCBPOLLINTERVAL=100 sponsorblockcast`
+`env SCBSCANINTERVAL=10 SCBPOLLINTERVAL=100 SCBCATEGORIES="sponsor selfpromo" sponsorblockcast`
 
-To modify the variables when running as a systemd service, create an override for the service with:  
-`sudo systemctl edit sponsorblockcast.service`  
+To modify the variables when running as a systemd service, create an override for the service with:
+
+`sudo systemctl edit sponsorblockcast.service`
+
 This will open a blank override file where you can specify Environment values like so:
 ```
 [Service]
 Environment="SCBPOLLINTERVAL=10"
 Environment="SCBSCANINTERVAL=100"
+Environment="SCBCATEGORIES=sponsor selfpromo"
 ```
 
 ## Differences from CastBlock
 * Regular scans to find new Chromecasts while the script is running
 * Allows configuring parameters
+* Specify which SponsorBlock categories to skip
 * If a Chromecast is found to be less than one poll interval away from a sponsor segment, the poll interval is temporarily lowered to wake up just as the Chromecast reaches the segment.
 * Full POSIX-compatibility
 
