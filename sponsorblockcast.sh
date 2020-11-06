@@ -22,7 +22,7 @@ check () {
   echo Chromecast is "$state"
   getSegments "$videoid"
   progress=$(echo "$status" | grep -oP 'remaining=\K[^s]+')
-  echo "$videoid".segments | while read -r start end; do
+  while read -r start end; do
     if [ "$(echo "($progress > $start) && ($progress < ($end - 5))" | bc)" -eq 1 ]
     then
       go-chromecast -u "$uuid" seek-to "$end"
@@ -34,7 +34,7 @@ check () {
         maxsleeptime=$(echo "$delta / 1" | bc)
       fi
     fi
-  done
+  done < "$videoid.segments"
 }
 
 listChromecasts() {
@@ -47,7 +47,7 @@ scanChromecasts() {
   currentTime=$(date +%s)
   if [ -z "$lastScan" ] || [ "$lastScan" -lt "$((currentTime - 300))" ]
   then
-    devices=$(listChromecasts)
+    listChromecasts > devices
     lastScan=$currentTime
   fi
 }
@@ -56,10 +56,10 @@ while :
 do
   scanChromecasts
   maxsleeptime=$POLLINTERVAL
-  echo "$devices" | while read -r uuid; do
+  while read -r uuid; do
     echo checking "$uuid"
     check "$uuid"
-  done
+  done < devices
   echo sleeping $maxsleeptime seconds
   sleep $maxsleeptime
 done
