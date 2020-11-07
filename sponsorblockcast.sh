@@ -5,8 +5,8 @@ SBCSCANINTERVAL="${SCANINTERVAL:-300}"
 SBCDIR="${SBCDIR:-/tmp/sponsorblockcast}"
 SBCCATEGORIES="${SBCCATEGORIES:-sponsor}"
 
-# Format categories for curl by creating a json array and escaping the brackets
-categories='\'$(echo $SBCCATEGORIES | jq -cR 'split(" ")' | sed -r 's/]/\\]/g')
+# Format categories for curl by quoting words, replacing spaces with commas and surrounding with escaped brackets
+categories="\\["$(echo $SBCCATEGORIES | sed 's/[^ ]\+/"&"/g;s/\s/,/g')"\\]"
 
 [ -e "$SBCDIR" ] && rm -r "$SBCDIR"
 mkdir $SBCDIR
