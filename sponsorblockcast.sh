@@ -26,9 +26,9 @@ check () {
   status=$(go-chromecast status -u "$uuid")
   state=$(echo "$status" | grep -oP '\(\K[^\)]+')
   [ "$state" != "PLAYING" ] && return
-  videoid=$(echo "$status" | grep -oP '\[\K[^\]]+')
+  videoId=$(echo "$status" | grep -oP '\[\K[^\]]+')
   echo Chromecast is "$state"
-  getSegments "$videoid"
+  getSegments "$videoId"
   progress=$(echo "$status" | grep -oP 'remaining=\K[^s]+')
   while read -r start end category; do
     if [ "$(echo "($progress > $start) && ($progress < ($end - 5))" | bc)" -eq 1 ]
@@ -38,12 +38,12 @@ check () {
     else
       delta=$(echo "$start - $progress" | bc)
       echo delta="$delta"
-      if [ "$(echo "($delta < $maxsleeptime) && ($delta > 0)" | bc)" -eq 1 ]
+      if [ "$(echo "($delta < $maxSleepTime) && ($delta > 0)" | bc)" -eq 1 ]
       then
-        maxsleeptime=$(echo "$delta / 1" | bc)
+        maxSleepTime=$(echo "$delta / 1" | bc)
       fi
     fi
-  done < "$videoid.segments"
+  done < "$videoId.segments"
 }
 
 listChromecasts() {
@@ -64,12 +64,12 @@ scanChromecasts() {
 while :
 do
   scanChromecasts
-  maxsleeptime=$SBCPOLLINTERVAL
+  maxSleepTime=$SBCPOLLINTERVAL
   while read -r uuid; do
     echo checking "$uuid"
     check "$uuid"
   done < devices
-  echo sleeping "$maxsleeptime" seconds
-  sleep "$maxsleeptime"
+  echo sleeping "$maxSleepTime" seconds
+  sleep "$maxSleepTime"
 done
 
