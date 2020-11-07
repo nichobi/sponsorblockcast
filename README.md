@@ -6,12 +6,15 @@ Care was taken to ensure it's fully POSIX-compatible, so it can run on lighter s
 The script will scan for all Chromecasts on the LAN (rescanning every 5 minutes), and then checks their status every 30 seconds. If a Chromecast is playing a YouTube video, sponsor segments are fetched from the SponsorBlock API and stored in a temporary file. Whenever the Chromecast reaches a sponsored segment, the script tells it to seek to the end of it. If the Chromecast is almost at a sponsored segment, the waiting time is reduced so we'll hopefully catch it right at the start of the segment.
 
 ## Installation
-### Dependencies
-* go-chromecast
-* jq
-* bc
-
+### Arch Linux
+Install [sponsorblockcast-git](https://aur.archlinux.org/packages/sponsorblockcast-git) with your [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers) of choice or with [makepkg](https://wiki.archlinux.org/index.php/Arch_User_Repository#Installing_and_upgrading_packages).
 ### Manual installation
+#### Dependencies
+
+* [go-chromecast](https://github.com/vishen/go-chromecast)
+* [jq](https://stedolan.github.io/jq)
+* [bc](https://www.gnu.org/software/bc)
+#### Instructions
 * Copy [sponsorblockcast.sh](/sponsorblockcast.sh) to `/usr/bin/sponsorblockcast`.
 * Copy [sponsorblockcast.service](/sponsorblockcast.service) to `/usr/lib/systemd/system/sponsorblockcast.service`.
 
