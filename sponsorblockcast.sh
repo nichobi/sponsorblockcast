@@ -6,11 +6,11 @@ SBCDIR="${SBCDIR:-/tmp/sponsorblockcast}"
 SBCCATEGORIES="${SBCCATEGORIES:-sponsor}"
 
 # Format categories for curl by quoting words, replacing spaces with commas and surrounding with escaped brackets
-categories="\\["$(echo $SBCCATEGORIES | sed 's/[^ ]\+/"&"/g;s/\s/,/g')"\\]"
+categories="\\["$(echo "$SBCCATEGORIES" | sed 's/[^ ]\+/"&"/g;s/\s/,/g')"\\]"
 
 [ -e "$SBCDIR" ] && rm -r "$SBCDIR"
-mkdir $SBCDIR || exit
-cd    $SBCDIR || exit
+mkdir "$SBCDIR" || exit
+cd    "$SBCDIR" || exit
 
 getSegments () {
   id=$1
@@ -69,7 +69,7 @@ do
     echo checking "$uuid"
     check "$uuid"
   done < devices
-  echo sleeping $maxsleeptime seconds
-  sleep $maxsleeptime
+  echo sleeping "$maxsleeptime" seconds
+  sleep "$maxsleeptime"
 done
 
