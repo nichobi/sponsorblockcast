@@ -9,8 +9,8 @@ SBCCATEGORIES="${SBCCATEGORIES:-sponsor}"
 categories="\\["$(echo $SBCCATEGORIES | sed 's/[^ ]\+/"&"/g;s/\s/,/g')"\\]"
 
 [ -e "$SBCDIR" ] && rm -r "$SBCDIR"
-mkdir $SBCDIR
-cd $SBCDIR || exit
+mkdir $SBCDIR || exit
+cd    $SBCDIR || exit
 
 getSegments () {
   id=$1
