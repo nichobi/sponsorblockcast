@@ -46,17 +46,12 @@ check () {
   done < "$video_id.segments"
 }
 
-list_chromecasts() {
-  go-chromecast ls | while read -r line; do
-    echo "$line" | grep -oP 'uuid="\K[^"]+'
-  done
-}
 
 scan_chromecasts() {
   current_time=$(date +%s)
   if [ -z "$last_scan" ] || [ "$last_scan" -lt "$((current_time - SBCSCANINTERVAL))" ]
   then
-    list_chromecasts > devices
+    go-chromecast ls | grep -oP 'uuid="\K[^"]+' > devices
     last_scan=$current_time
   fi
 }
