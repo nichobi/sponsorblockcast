@@ -12,7 +12,7 @@ categories="\\["$(echo "$SBCCATEGORIES" | sed 's/[^ ]\+/"&"/g;s/\s/,/g')"\\]"
 mkdir "$SBCDIR" || exit
 cd    "$SBCDIR" || exit
 
-getSegments () {
+get_segments () {
   id=$1
   if [ ! -f "$id".segments ]
   then
@@ -26,9 +26,9 @@ check () {
   status=$(go-chromecast status -u "$uuid")
   state=$(echo "$status" | grep -oP '\(\K[^\)]+')
   [ "$state" != "PLAYING" ] && return
-  videoid=$(echo "$status" | grep -oP '\[\K[^\]]+')
+  video_id=$(echo "$status" | grep -oP '\[\K[^\]]+')
   echo Chromecast is "$state"
-  getSegments "$videoid"
+  get_segments "$video_id"
   progress=$(echo "$status" | grep -oP 'remaining=\K[^s]+')
   while read -r start end category; do
     if [ "$(echo "($progress > $start) && ($progress < ($end - 5))" | bc)" -eq 1 ]
@@ -38,38 +38,38 @@ check () {
     else
       delta=$(echo "$start - $progress" | bc)
       echo delta="$delta"
-      if [ "$(echo "($delta < $maxsleeptime) && ($delta > 0)" | bc)" -eq 1 ]
+      if [ "$(echo "($delta < $max_sleep_time) && ($delta > 0)" | bc)" -eq 1 ]
       then
-        maxsleeptime=$(echo "$delta / 1" | bc)
+        max_sleep_time=$(echo "$delta / 1" | bc)
       fi
     fi
-  done < "$videoid.segments"
+  done < "$video_id.segments"
 }
 
-listChromecasts() {
+list_chromecasts() {
   go-chromecast ls | while read -r line; do
     echo "$line" | grep -oP 'uuid="\K[^"]+'
   done
 }
 
-scanChromecasts() {
-  currentTime=$(date +%s)
-  if [ -z "$lastScan" ] || [ "$lastScan" -lt "$((currentTime - SBCSCANINTERVAL))" ]
+scan_chromecasts() {
+  current_time=$(date +%s)
+  if [ -z "$last_scan" ] || [ "$last_scan" -lt "$((current_time - SBCSCANINTERVAL))" ]
   then
-    listChromecasts > devices
-    lastScan=$currentTime
+    list_chromecasts > devices
+    last_scan=$current_time
   fi
 }
 
 while :
 do
-  scanChromecasts
-  maxsleeptime=$SBCPOLLINTERVAL
+  scan_chromecasts
+  max_sleep_time=$SBCPOLLINTERVAL
   while read -r uuid; do
     echo checking "$uuid"
     check "$uuid"
   done < devices
-  echo sleeping "$maxsleeptime" seconds
-  sleep "$maxsleeptime"
+  echo sleeping "$max_sleep_time" seconds
+  sleep "$max_sleep_time"
 done
 
