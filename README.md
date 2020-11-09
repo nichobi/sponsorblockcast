@@ -23,13 +23,13 @@ Run `sponsorblockcast` from a terminal or activate the service with `systemd ena
 
 ## Configuration
 You can configure the following parameters by setting the appropriate enviroment values:
-* `SCBPOLLINTERVAL` - Time to wait between checking Chromecast status (default=`30`)
-* `SCBSCANINTERVAL` - Time to wait between each scan for available Chromecast (default=`300`)
-* `SCBDIR` - Directory where temporary files are stored (default=`/tmp/sponsorblockcast`)
-* `SCBCATEGORIES` - Space-separated SponsorBlock categories to skip, see [category list](https://github.com/ajayyy/SponsorBlock/blob/master/config.json.example) (default=`sponsor`)
+* `SBCPOLLINTERVAL` - Time to wait between checking Chromecast status (default=`30`)
+* `SBCSCANINTERVAL` - Time to wait between each scan for available Chromecast (default=`300`)
+* `SBCDIR` - Directory where temporary files are stored (default=`/tmp/sponsorblockcast`)
+* `SBCCATEGORIES` - Space-separated SponsorBlock categories to skip, see [category list](https://github.com/ajayyy/SponsorBlock/blob/master/config.json.example) (default=`sponsor`)
 
 To run from the terminal with custom parameters you can use `env` like so:
-`env SCBSCANINTERVAL=10 SCBPOLLINTERVAL=100 SCBCATEGORIES="sponsor selfpromo" sponsorblockcast`
+`env SBCSCANINTERVAL=10 SBCPOLLINTERVAL=100 SBCCATEGORIES="sponsor selfpromo" sponsorblockcast`
 
 To modify the variables when running as a systemd service, create an override for the service with:
 
@@ -38,9 +38,9 @@ To modify the variables when running as a systemd service, create an override fo
 This will open a blank override file where you can specify Environment values like so:
 ```
 [Service]
-Environment="SCBPOLLINTERVAL=10"
-Environment="SCBSCANINTERVAL=100"
-Environment="SCBCATEGORIES=sponsor selfpromo"
+Environment="SBCPOLLINTERVAL=10"
+Environment="SBCSCANINTERVAL=100"
+Environment="SBCCATEGORIES=sponsor selfpromo"
 ```
 
 ## Differences from CastBlock
