@@ -17,7 +17,7 @@ get_segments () {
   if [ ! -f "$id".segments ]
   then
     curl -fs "https://sponsor.ajay.app/api/skipSegments?videoID=$id&categories=$categories" |\
-    jq -r '.[] | (.segment|join(" ")) + " " + .category' > "$id.segments"
+    jq -r '.[] | (.segment|map_values(tostring)|join(" ")) + " " + .category' > "$id.segments"
   fi
 }
 
