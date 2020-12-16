@@ -3,7 +3,7 @@ A POSIX shell script that skips sponsored Youtube content on all local Chromecas
 
 Care was taken to ensure it's fully POSIX-compatible, so it can run on lighter shells such as [Dash](https://wiki.archlinux.org/index.php/Dash).
 
-The script will scan for all Chromecasts on the LAN (rescanning every 5 minutes), and then checks their status every 30 seconds. If a Chromecast is playing a YouTube video, sponsor segments are fetched from the SponsorBlock API and stored in a temporary file. Whenever the Chromecast reaches a sponsored segment, the script tells it to seek to the end of it. If the Chromecast is almost at a sponsored segment, the waiting time is reduced so we'll hopefully catch it right at the start of the segment.
+The script will scan for all Chromecasts on the LAN, and launches a process for each one to efficiently poll it status every second. If a Chromecast is found to be playing a YouTube video, sponsor segments are fetched from the SponsorBlock API and stored in a temporary file. Whenever the Chromecast reaches a sponsored segment, the script tells it to seek to the end of the segment.
 
 ## Installation
 ### Arch Linux
@@ -23,7 +23,7 @@ Run `sponsorblockcast` from a terminal or activate the service with `systemd ena
 
 ## Configuration
 You can configure the following parameters by setting the appropriate enviroment values:
-* `SBCPOLLINTERVAL` - Time to wait between checking Chromecast status (default=`30`)
+* `SBCPOLLINTERVAL` - Time to wait between each polling of the Chromecasts' status (default=`1`)
 * `SBCSCANINTERVAL` - Time to wait between each scan for available Chromecast (default=`300`)
 * `SBCDIR` - Directory where temporary files are stored (default=`/tmp/sponsorblockcast`)
 * `SBCCATEGORIES` - Space-separated SponsorBlock categories to skip, see [category list](https://github.com/ajayyy/SponsorBlock/blob/master/config.json.example) (default=`sponsor`)
@@ -47,6 +47,6 @@ Environment="SBCCATEGORIES=sponsor selfpromo"
 * Regular scans to find new Chromecasts while the script is running
 * Allows configuring parameters
 * Specify which SponsorBlock categories to skip
-* If a Chromecast is found to be less than one poll interval away from a sponsor segment, the poll interval is temporarily lowered to wake up just as the Chromecast reaches the segment.
+* More efficient polling, through using `go-chromecast`'s `watch` command, avoiding expensive startup costs. This lets us poll much more often, without any large performance costs.
 * Full POSIX-compatibility
 
