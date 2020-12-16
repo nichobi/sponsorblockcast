@@ -21,50 +21,52 @@ get_segments () {
   fi
 }
 
-check () {
+watch () {
   uuid=$1
-  status=$(go-chromecast status -u "$uuid")
-  state=$(echo "$status" | grep -oP '\(\K[^\)]+')
-  [ "$state" != "PLAYING" ] && return
-  video_id=$(echo "$status" | grep -oP '\[\K[^\]]+')
-  echo Chromecast is "$state"
-  get_segments "$video_id"
-  progress=$(echo "$status" | grep -oP 'remaining=\K[^s]+')
-  while read -r start end category; do
-    if [ "$(echo "($progress > $start) && ($progress < ($end - 5))" | bc)" -eq 1 ]
+  go-chromecast watch -u "$uuid" --interval 1 \
+  | while read -r status; do
+    if  echo "$status" | grep -q "YouTube (PLAYING)"
     then
-      echo "Skipping $category from $start -> $end"
-      go-chromecast -u "$uuid" seek-to "$end"
-    else
-      delta=$(echo "$start - $progress" | bc)
-      echo delta="$delta"
-      if [ "$(echo "($delta < $max_sleep_time) && ($delta > 0)" | bc)" -eq 1 ]
-      then
-        max_sleep_time=$(echo "$delta / 1" | bc)
-      fi
+      video_id=$(echo "$status" | grep -oP "id=\"\K[^\"]+")
+      get_segments "$video_id"
+      progress=$(echo "$status" | grep -oP 'remaining=\K[^s]+')
+      while read -r start end category; do
+        if [ "$(echo "($progress > $start) && ($progress < ($end - 5))" | bc)" -eq 1 ]
+        then
+          echo "Skipping $category from $start -> $end on $uuid"
+          go-chromecast -u "$uuid" seek-to "$end"
+        fi
+      done < "$video_id.segments"
     fi
-  done < "$video_id.segments"
+  done;
 }
 
-
 scan_chromecasts() {
-  current_time=$(date +%s)
-  if [ -z "$last_scan" ] || [ "$last_scan" -lt "$((current_time - SBCSCANINTERVAL))" ]
-  then
-    go-chromecast ls | grep -oP 'uuid="\K[^"]+' > devices
-    last_scan=$current_time
-  fi
+  go-chromecast ls | grep -oP 'uuid="\K[^"]+' > devices
+}
+
+pid_exists () {
+  ps -p "$1" > /dev/null
+}
+
+# Takes a variable name and returns its value
+expand () {
+  varname=$1
+  set | grep -oP "^$varname='\K[^']*"
 }
 
 while :
 do
   scan_chromecasts
-  max_sleep_time=$SBCPOLLINTERVAL
   while read -r uuid; do
-    echo checking "$uuid"
-    check "$uuid"
+    uuid_var="sbc$uuid"
+    if [ -z "$(expand "$uuid_var")" ] || ! pid_exists "$(expand "$uuid_var")"
+    then
+      watch "$uuid" &
+      eval "$uuid_var"=\$!
+      echo watching "$uuid", pid="$(expand "$uuid_var")"
+    fi
   done < devices
-  echo sleeping "$max_sleep_time" seconds
-  sleep "$max_sleep_time"
+  sleep "$SBCSCANINTERVAL"
 done
 
