@@ -56,6 +56,12 @@ Environment="SBCSCANINTERVAL=100"
 Environment="SBCCATEGORIES=sponsor selfpromo"
 ```
 
+To modify the variables when running as a Docker container, you can add arguments to the `docker run` command like so:
+
+`docker run --network=host --env SBCPOLLINTERVAL=10 --env SBCSCANINTERVAL=100 --name sponsorblockcast sponsorblockcast:latest`
+
+When using `docker-compose.yaml` you can simply edit the `environment` directive as shown in the example file.
+
 ## Differences from CastBlock
 * Regular scans to find new Chromecasts while the script is running
 * Allows configuring parameters
