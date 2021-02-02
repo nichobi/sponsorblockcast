@@ -42,7 +42,7 @@ watch () {
 }
 
 scan_chromecasts() {
-  go-chromecast ls | grep -oP 'uuid="\K[^"]+' > devices
+  go-chromecast ls | grep -v 'device="Google Cast Group"' | grep -oP 'uuid="\K[^"]+' | sed 's/-//g;' > devices
 }
 
 pid_exists () {
