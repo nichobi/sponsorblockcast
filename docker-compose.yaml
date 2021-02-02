@@ -7,6 +7,11 @@ services:
         - alpine:latest
     image: sponsorblockcast:latest
     network_mode: host
+    environment:
+      SBCPOLLINTERVAL: 1
+      SBCSCANINTERVAL: 300
+      SBCCATEGORIES: sponsor
+      SBCDIR: /tmp/sponsorblockcast
     cap_add: 
       - NET_ADMIN
     restart: always
