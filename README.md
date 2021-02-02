@@ -8,15 +8,16 @@ The script will scan for all Chromecasts on the LAN, and launches a process for 
 ## Installation
 ### Arch Linux
 Install [sponsorblockcast-git](https://aur.archlinux.org/packages/sponsorblockcast-git) with your [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers) of choice or with [makepkg](https://wiki.archlinux.org/index.php/Arch_User_Repository#Installing_and_upgrading_packages).
+
 ### Docker image
 You can [install Docker](https://docs.docker.com/engine/install/) directly or use [Docker Compose](https://docs.docker.com/compose/install/) (Or use Podman, Portainer, etc). Please note you *MUST* use the 'host' network as shown below for CLI Docker or in the example for `docker-compose`.
- ### Docker
 
+#### Docker
 Run the below commands as root or a member of the `docker` group
 * `docker build . -t sponsorblockcast:latest`
 * `docker run --network=host --name sponsorblockcast sponsorblockcast:latest`
- ### Docker Compose
 
+#### Docker Compose
 First you will need a `docker-compose.yaml` file, such as the example included. Run the below commands as root or a member of the `docker` group
 * `docker-compose build`
 * `docker-compose up -d`
