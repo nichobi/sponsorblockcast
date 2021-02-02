@@ -1,0 +1,12 @@
+version: '3.6'
+services:
+  sponsorblockcast:
+    build: 
+      context: .
+      cache_from:
+        - alpine:latest
+    image: sponsorblockcast:latest
+    network_mode: host
+    cap_add: 
+      - NET_ADMIN
+    restart: always
