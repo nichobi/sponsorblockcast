@@ -5,7 +5,8 @@ RUN apk -U add jq bc grep \
   && GC_URL=`wget https://api.github.com/repos/vishen/go-chromecast/releases/latest -O - | jq -r '.assets[].browser_download_url' | grep $GC_BUILD` \
   && wget $GC_URL -O - | tar xzf - > /usr/bin/go-chromecast \
   && chmod +x /usr/bin/sponsorblockcast \
-  && chmod +x /usr/bin/go-chromecast
+  && chmod +x /usr/bin/go-chromecast \
+  && rm -rf /var/cache/apk/* /lib/apk/db/* /root/*
 ENV SBCPOLLINTERVAL 1
 ENV SBCSCANINTERVAL 300
 ENV SBCCATEGORIES sponsor
