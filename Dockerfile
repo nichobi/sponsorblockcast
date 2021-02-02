@@ -1,21 +1,11 @@
 FROM alpine:latest
-ARG SPONSORBLOCKCAST_REPO=nichobi/sponsorblockcast
-RUN apk -U add jq bc grep git go curl \
-  && git clone https://github.com/vishen/go-chromecast \
-  && cd go-chromecast \
-  && latest_release=`curl https://api.github.com/repos/vishen/go-chromecast/tags | jq -r '.[0].name'` \
-  && git pull origin $latest_release \
-  && git checkout $latest_release \
-  && go install \
-  && cp ~/go/bin/go-chromecast /usr/bin/go-chromecast \
-  && cd .. \
-  && rm -rf go-chromecast \
-  && git clone https://github.com/$SPONSORBLOCKCAST_REPO \
-  && cp  sponsorblockcast/sponsorblockcast.sh /usr/bin/sponsorblockcast \
-  && rm -rf sponsorblockcast \
+ARG GC_BUILD=linux_amd64
+ADD sponsorblockcast.sh /usr/bin/sponsorblockcast
+RUN apk -U add jq bc grep \
+  && GC_URL=`wget https://api.github.com/repos/vishen/go-chromecast/releases/latest -O - | jq -r '.assets[].browser_download_url' | grep $GC_BUILD` \
+  && wget $GC_URL -O - | tar xzf - > /usr/bin/go-chromecast \
   && chmod +x /usr/bin/sponsorblockcast \
-  && chmod +x /usr/bin/go-chromecast \
-  && apk del git go curl
+  && chmod +x /usr/bin/go-chromecast
 ENV SBCPOLLINTERVAL 1
 ENV SBCSCANINTERVAL 300
 ENV SBCCATEGORIES sponsor
