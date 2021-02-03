@@ -46,7 +46,7 @@ scan_chromecasts() {
 }
 
 pid_exists () {
-  ps -p "$1" > /dev/null
+  kill -0 "$1" 2>/dev/null
 }
 
 # Takes a variable name and returns its value
