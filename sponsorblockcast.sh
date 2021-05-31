@@ -14,7 +14,7 @@ cd    "$SBCDIR" || exit 1
 
 get_segments () {
   id=$1
-  if [ ! -f "$id".segments ]
+  if [ -n "$id" ] && [ ! -f "$id".segments ]
   then
     curl -fs "https://sponsor.ajay.app/api/skipSegments?videoID=$id&categories=$categories" |\
     jq -r '.[] | (.segment|map_values(tostring)|join(" ")) + " " + .category' > "$id.segments"
@@ -25,7 +25,7 @@ watch () {
   uuid=$1
   go-chromecast watch -u "$uuid" --interval 1 \
   | while read -r status; do
-    if  echo "$status" | grep -q "YouTube (PLAYING)"
+    if echo "$status" | grep -q "YouTube (PLAYING)"
     then
       video_id=$(echo "$status" | grep -oP "id=\"\K[^\"]+")
       get_segments "$video_id"
