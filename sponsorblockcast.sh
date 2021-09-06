@@ -51,8 +51,7 @@ pid_exists () {
 
 # Takes a variable name and returns its value
 expand () {
-  varname=$1
-  set | grep -oP "^$varname='\K[^']*"
+  eval "echo \$$1"
 }
 
 while :
@@ -63,7 +62,7 @@ do
     if [ -z "$(expand "$uuid_var")" ] || ! pid_exists "$(expand "$uuid_var")"
     then
       watch "$uuid" &
-      eval "$uuid_var"=\$!
+      eval "$uuid_var=$!"
       echo watching "$uuid", pid="$(expand "$uuid_var")"
     fi
   done < devices
