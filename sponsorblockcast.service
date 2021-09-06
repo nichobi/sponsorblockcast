@@ -3,6 +3,7 @@ After=network.target
 
 [Service]
 ExecStart=/usr/bin/sponsorblockcast
+DynamicUser=yes
 
 [Install]
 WantedBy=multi-user.target
