@@ -8,6 +8,10 @@ SBCCATEGORIES="${SBCCATEGORIES:-sponsor}"
 # Format categories for curl by quoting words, replacing spaces with commas and surrounding with escaped brackets
 categories="\\[$(echo "$SBCCATEGORIES" | sed 's/[^ ]\+/"&"/g;s/\s/,/g')\\]"
 
+# Make sure the watch() subprocess gets killed if the parent script is terminated. 
+trap "exit" INT TERM
+trap "kill 0" EXIT
+
 [ -e "$SBCDIR" ] && rm -r "$SBCDIR"
 mkdir "$SBCDIR" || exit 1
 cd    "$SBCDIR" || exit 1
@@ -28,6 +32,13 @@ watch () {
     if echo "$status" | grep -q "YouTube (PLAYING)"
     then
       video_id=$(echo "$status" | grep -oP "id=\"\K[^\"]+")
+      video_title=$(echo "$status" | grep -oP "title=\"\K[^\"]+")
+      video_artist=$(echo "$status" | grep -oP "artist=\"\K[^\"]+")
+      if [ -z "$video_id" ]
+      then
+        echo "Video ID missing. Attempting to identify video by search."
+        video_id=$(curl --get "https://www.googleapis.com/youtube/v3/search" --data-urlencode "q=$video_title\ $video_artist" --data-urlencode "maxResults=1" --data-urlencode "key=$SBCYOUTUBEAPIKEY" | jq '.items[0].id.videoId')
+      fi
       get_segments "$video_id"
       progress=$(echo "$status" | grep -oP 'remaining=\K[^s]+')
       while read -r start end category; do

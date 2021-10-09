@@ -31,7 +31,7 @@ First you will need a `docker-compose.yaml` file, such as the example included. 
 * Copy [sponsorblockcast.service](/sponsorblockcast.service) to `/usr/lib/systemd/system/sponsorblockcast.service`.
 
 ## Usage
-Run `sponsorblockcast` from a terminal or activate the service with `systemd enable --now sponsorblockcast`
+Run `sponsorblockcast` from a terminal or activate the service with `systemd enable sponsorblockcast && systemctl start sponsorblockcast`
 
 ## Configuration
 You can configure the following parameters by setting the appropriate enviroment values:
@@ -39,6 +39,7 @@ You can configure the following parameters by setting the appropriate enviroment
 * `SBCSCANINTERVAL` - Time to wait between each scan for available Chromecast (default=`300`)
 * `SBCDIR` - Directory where temporary files are stored (default=`/tmp/sponsorblockcast`)
 * `SBCCATEGORIES` - Space-separated SponsorBlock categories to skip, see [category list](https://github.com/ajayyy/SponsorBlock/blob/master/config.json.example) (default=`sponsor`)
+* `SBCYOUTUBEAPIKEY` - [YouTube API key](https://developers.google.com/youtube/registering_an_application) for fallback video identification (required on some Chromecast devices).
 
 To run from the terminal with custom parameters you can use `env` like so:
 `env SBCSCANINTERVAL=10 SBCPOLLINTERVAL=100 SBCCATEGORIES="sponsor selfpromo" sponsorblockcast`
