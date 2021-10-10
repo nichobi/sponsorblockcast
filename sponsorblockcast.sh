@@ -36,8 +36,14 @@ watch () {
       video_artist=$(echo "$status" | grep -oP "artist=\"\K[^\"]+")
       if [ -z "$video_id" ]
       then
-        echo "Video ID missing. Attempting to identify video by search."
-        video_id=$(curl --get "https://www.googleapis.com/youtube/v3/search" --data-urlencode "q=$video_title\ $video_artist" --data-urlencode "maxResults=1" --data-urlencode "key=$SBCYOUTUBEAPIKEY" | jq '.items[0].id.videoId')
+        if [ "$prev_video" != "$video_title $video_artist" ]
+        then
+          video_id="$(curl -fs --get "https://www.googleapis.com/youtube/v3/search" --data-urlencode "q=$video_title $video_artist" --data-urlencode "maxResults=1" --data-urlencode "key=$SBCYOUTUBEAPIKEY" | jq -j '.items[0].id.videoId')"
+          prev_video="$video_title $video_artist"
+          prev_video_id="$video_id"
+        else
+          video_id="$prev_video_id"
+        fi
       fi
       get_segments "$video_id"
       progress=$(echo "$status" | grep -oP 'remaining=\K[^s]+')
