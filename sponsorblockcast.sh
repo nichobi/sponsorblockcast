@@ -5,8 +5,8 @@ SBCSCANINTERVAL="${SBCSCANINTERVAL:-300}"
 SBCDIR="${SBCDIR:-/tmp/sponsorblockcast}"
 SBCCATEGORIES="${SBCCATEGORIES:-sponsor}"
 
-# Format categories for curl by quoting words, replacing spaces with commas and surrounding with escaped brackets
-categories="\\[$(echo "$SBCCATEGORIES" | sed 's/[^ ]\+/"&"/g;s/\s/,/g')\\]"
+# Format categories for curl by quoting words, replacing spaces with commas and surrounding with brackets
+categories="[$(echo "$SBCCATEGORIES" | sed 's/[^ ]\+/"&"/g;s/\s/,/g')]"
 
 # Make sure the watch() subprocess gets killed if the parent script is terminated. 
 trap "exit" INT TERM
@@ -20,7 +20,7 @@ get_segments () {
   id=$1
   if [ -n "$id" ] && [ ! -f "$id".segments ]
   then
-    curl -fs "https://sponsor.ajay.app/api/skipSegments?videoID=$id&categories=$categories" |\
+    curl -fs --get "https://sponsor.ajay.app/api/skipSegments" --data "videoID=$id" --data "categories=$categories" |\
     jq -r '.[] | (.segment|map_values(tostring)|join(" ")) + " " + .category' > "$id.segments"
   fi
 }
