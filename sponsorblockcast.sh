@@ -34,7 +34,7 @@ watch () {
       video_id=$(echo "$status" | grep -oP "id=\"\K[^\"]+")
       video_title=$(echo "$status" | grep -oP "title=\"\K[^\"]+")
       video_artist=$(echo "$status" | grep -oP "artist=\"\K[^\"]+")
-      if [ -z "$video_id" ]
+      if [ -z "$video_id" ] && [ -n "$SBCYOUTUBEAPIKEY" ]
       then
         if [ "$prev_video" != "$video_title $video_artist" ]
         then
