@@ -54,6 +54,7 @@ This will open a blank override file where you can specify Environment values li
 Environment="SBCPOLLINTERVAL=10"
 Environment="SBCSCANINTERVAL=100"
 Environment="SBCCATEGORIES=sponsor selfpromo"
+SBCYOUTUBEAPIKEY="your private API key"
 ```
 
 To modify the variables when running as a Docker container, you can add arguments to the `docker run` command like so:
