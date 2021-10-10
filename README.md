@@ -31,7 +31,7 @@ First you will need a `docker-compose.yaml` file, such as the example included. 
 * Copy [sponsorblockcast.service](/sponsorblockcast.service) to `/usr/lib/systemd/system/sponsorblockcast.service`.
 
 ## Usage
-Run `sponsorblockcast` from a terminal or activate the service with `systemd enable sponsorblockcast && systemctl start sponsorblockcast`
+Run `sponsorblockcast` from a terminal or activate the service with `systemctl enable --now sponsorblockcast`
 
 ## Configuration
 You can configure the following parameters by setting the appropriate enviroment values:
