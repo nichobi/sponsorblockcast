@@ -25,6 +25,15 @@ get_segments () {
   fi
 }
 
+has_variable_changed () {
+  if [ "$*" = "$prev_value" ] ; then
+    return 1 # not changed
+  else
+    prev_value=$*
+    return 0 # changed
+  fi
+}
+
 watch () {
   uuid=$1
   go-chromecast watch -u "$uuid" --interval "$SBCPOLLINTERVAL" \
@@ -36,10 +45,9 @@ watch () {
       video_artist=$(echo "$status" | grep -oP "artist=\"\K[^\"]+")
       if [ -z "$video_id" ] && [ -n "$SBCYOUTUBEAPIKEY" ]
       then
-        if [ "$prev_video" != "$video_title $video_artist" ]
+        if has_variable_changed "$video_title $video_artist"
         then
           video_id="$(curl -fs --get "https://www.googleapis.com/youtube/v3/search" --data-urlencode "q=\"$video_artist\" \"intitle:\"$video_title\"" --data-urlencode "maxResults=1" --data-urlencode "key=$SBCYOUTUBEAPIKEY" | jq -j '.items[0].id.videoId')"
-          prev_video="$video_title $video_artist"
           prev_video_id="$video_id"
         else
           video_id="$prev_video_id"
