@@ -64,15 +64,18 @@ watch () {
         fi
       fi
 
-      get_segments "$video_id"
-      progress=$(echo "$status" | grep -oP 'remaining=\K[^s]+')
-      while read -r start end category; do
-        if [ "$(echo "($progress > $start) && ($progress < ($end - 5))" | bc)" -eq 1 ]
-        then
-          echo "Skipping $category from $start -> $end on $uuid"
-          go-chromecast -u "$uuid" seek-to "$end"
-        fi
-      done < "$video_id.segments"
+      if [ -n "$video_id" ]; then
+        get_segments "$video_id"
+        progress=$(echo "$status" | grep -oP 'remaining=\K[^s]+')
+        while read -r start end category; do
+          if [ "$(echo "($progress > $start) && ($progress < ($end - 5))" | bc)" -eq 1 ]
+          then
+            echo "Skipping $category from $start -> $end on $uuid"
+            go-chromecast -u "$uuid" seek-to "$end"
+          fi
+        done < "$video_id.segments"
+      fi
+
     fi
   done;
 }
