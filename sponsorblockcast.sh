@@ -38,7 +38,7 @@ watch () {
       then
         if [ "$prev_video" != "$video_title $video_artist" ]
         then
-          video_id="$(curl -fs --get "https://www.googleapis.com/youtube/v3/search" --data-urlencode "q=$video_title $video_artist" --data-urlencode "maxResults=1" --data-urlencode "key=$SBCYOUTUBEAPIKEY" | jq -j '.items[0].id.videoId')"
+          video_id="$(curl -fs --get "https://www.googleapis.com/youtube/v3/search" --data-urlencode "q=\"$video_artist\" \"intitle:\"$video_title\"" --data-urlencode "maxResults=1" --data-urlencode "key=$SBCYOUTUBEAPIKEY" | jq -j '.items[0].id.videoId')"
           prev_video="$video_title $video_artist"
           prev_video_id="$video_id"
         else
