@@ -34,6 +34,16 @@ has_variable_changed () {
   fi
 }
 
+get_videoID_by_API () {
+  if [ -n "$SBCYOUTUBEAPIKEY" ] ; then
+    curl -fs --get "https://www.googleapis.com/youtube/v3/search" --data-urlencode "q=\"$video_artist\" \"intitle:\"$video_title\"" --data-urlencode "maxResults=1" --data-urlencode "key=$SBCYOUTUBEAPIKEY" \
+    | jq -j '.items[0].id.videoId'
+  else
+    echo "Unable to identify Video ID. Try setting \$SBCYOUTUBEAPIKEY=\"your private Youtube API Key\" to enable fallback method."
+    return 1
+  fi
+}
+
 watch () {
   uuid=$1
   go-chromecast watch -u "$uuid" --interval "$SBCPOLLINTERVAL" \
@@ -43,16 +53,17 @@ watch () {
       video_id=$(echo "$status" | grep -oP "id=\"\K[^\"]+")
       video_title=$(echo "$status" | grep -oP "title=\"\K[^\"]+")
       video_artist=$(echo "$status" | grep -oP "artist=\"\K[^\"]+")
-      if [ -z "$video_id" ] && [ -n "$SBCYOUTUBEAPIKEY" ]
+
+      if [ -z "$video_id" ]
       then
         if has_variable_changed "$video_title $video_artist"
         then
-          video_id="$(curl -fs --get "https://www.googleapis.com/youtube/v3/search" --data-urlencode "q=\"$video_artist\" \"intitle:\"$video_title\"" --data-urlencode "maxResults=1" --data-urlencode "key=$SBCYOUTUBEAPIKEY" | jq -j '.items[0].id.videoId')"
-          prev_video_id="$video_id"
+          video_id="$(get_videoID_by_API)" && prev_video_id="$video_id"
         else
           video_id="$prev_video_id"
         fi
       fi
+
       get_segments "$video_id"
       progress=$(echo "$status" | grep -oP 'remaining=\K[^s]+')
       while read -r start end category; do
