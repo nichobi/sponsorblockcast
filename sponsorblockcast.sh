@@ -51,7 +51,7 @@ watch () {
   uuid=$1
   go-chromecast watch -u "$uuid" --interval "$SBCPOLLINTERVAL" \
   | while read -r status; do
-    if echo "$status" | grep -q "YouTube (PLAYING)"
+    if echo "$status" | grep -q "YouTube (PLAYING), title="
     then
       video_id=$(echo "$status" | grep -oP "id=\"\K[^\"]+")
       video_title=$(echo "$status" | grep -oP "title=\"\K[^\"]+")
