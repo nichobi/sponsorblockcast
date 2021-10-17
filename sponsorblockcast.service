@@ -4,6 +4,7 @@ After=network.target
 [Service]
 ExecStart=/usr/bin/sponsorblockcast
 DynamicUser=yes
+Environment=HOME=/tmp/sponsorblockcast
 
 [Install]
 WantedBy=multi-user.target
