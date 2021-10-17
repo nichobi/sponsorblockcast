@@ -25,6 +25,7 @@ get_segments () {
   if [ -n "$id" ] && [ ! -f "$id".json ]
   then
     curl -fs --get "https://sponsor.ajay.app/api/skipSegments" --data "videoID=$id" --data "categories=$categories" > "$id".json
+    [ -s "$id".json ] && echo "$(jq '.[].segment[1]' "$id".json | wc -l) skippable segments found for video $id" || echo "No skippable segments found for video $id"
   fi
 }
 
