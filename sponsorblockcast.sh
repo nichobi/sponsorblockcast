@@ -1,5 +1,7 @@
 #!/bin/sh
 
+[ "$SBCDEBUG" = true ] && set -x
+
 SBCPOLLINTERVAL="${SBCPOLLINTERVAL:-1}"
 SBCSCANINTERVAL="${SBCSCANINTERVAL:-300}"
 SBCDIR="${SBCDIR:-/tmp/sponsorblockcast}"
