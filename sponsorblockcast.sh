@@ -18,10 +18,9 @@ cd    "$SBCDIR" || exit 1
 
 get_segments () {
   id=$1
-  if [ -n "$id" ] && [ ! -f "$id".segments ]
+  if [ -n "$id" ] && [ ! -f "$id".json ]
   then
-    curl -fs --get "https://sponsor.ajay.app/api/skipSegments" --data "videoID=$id" --data "categories=$categories" |\
-    jq -r '.[] | (.segment|map_values(tostring)|join(" ")) + " " + .category' > "$id.segments"
+    curl -fs --get "https://sponsor.ajay.app/api/skipSegments" --data "videoID=$id" --data "categories=$categories" > "$id".json
   fi
 }
 
@@ -67,13 +66,14 @@ watch () {
       if [ -n "$video_id" ]; then
         get_segments "$video_id"
         progress=$(echo "$status" | grep -oP 'remaining=\K[^s]+')
+        jq --raw-output '.[] | (.segment|map_values(tostring)|join(" ")) + " " + .category' "$video_id".json 2> /dev/null |\
         while read -r start end category; do
           if [ "$(echo "($progress > $start) && ($progress < ($end - 5))" | bc)" -eq 1 ]
           then
             echo "Skipping $category from $start -> $end on $uuid"
             go-chromecast -u "$uuid" seek-to "$end"
           fi
-        done < "$video_id.segments"
+        done
       fi
 
     fi
