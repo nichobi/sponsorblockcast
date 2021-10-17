@@ -39,7 +39,7 @@ has_variable_changed () {
 # Fallback search method in case the Chromecast device fails to pass the videoId to go-chromecast
 get_videoID_by_API () {
   if [ -n "$SBCYOUTUBEAPIKEY" ] ; then
-    curl -fs --get "https://www.googleapis.com/youtube/v3/search" --data-urlencode "q=\"$video_artist\" \"intitle:\"$video_title\"" --data-urlencode "maxResults=1" --data-urlencode "key=$SBCYOUTUBEAPIKEY" \
+    curl -fs --get "https://www.googleapis.com/youtube/v3/search" --data-urlencode "q=\"$video_artist\"+intitle:\"$video_title\"" --data-urlencode "maxResults=1" --data-urlencode "key=$SBCYOUTUBEAPIKEY" \
     | jq -j '.items[0].id.videoId'
   else
     echo "Unable to identify Video ID. Try setting \$SBCYOUTUBEAPIKEY=\"your private Youtube API Key\" to enable fallback method."
