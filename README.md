@@ -34,7 +34,7 @@ First you will need a `docker-compose.yaml` file, such as the example included. 
 Run `sponsorblockcast` from a terminal or activate the service with `systemctl enable --now sponsorblockcast`
 
 ## Configuration
-You can configure the following parameters by setting the appropriate enviroment values:
+You can configure the following parameters by setting the appropriate environment values:
 * `SBCPOLLINTERVAL` - Time to wait between each polling of the Chromecasts' status (default=`1`)
 * `SBCSCANINTERVAL` - Time to wait between each scan for available Chromecast (default=`300`)
 * `SBCDIR` - Directory where temporary files are stored (default=`/tmp/sponsorblockcast`)
@@ -54,7 +54,7 @@ This will open a blank override file where you can specify Environment values li
 Environment="SBCPOLLINTERVAL=10"
 Environment="SBCSCANINTERVAL=100"
 Environment="SBCCATEGORIES=sponsor selfpromo"
-SBCYOUTUBEAPIKEY="your private API key"
+Environment="SBCYOUTUBEAPIKEY=<your private API key>"
 ```
 
 To modify the variables when running as a Docker container, you can add arguments to the `docker run` command like so:
