@@ -63,10 +63,10 @@ watch () {
     if echo "$status" | grep -q "YouTube (PLAYING), title="
     then
       video_id=$(echo "$status" | grep -oP "id=\"\K[^\"]+")
-      video_title=$(echo "$status" | grep -oP "title=\"\K[^\"]+")
-      video_artist=$(echo "$status" | grep -oP "artist=\"\K[^\"]+")
 
       if [ -z "$video_id" ]; then
+        video_title=$(echo "$status" | grep -oP "title=\"\K[^\"]+")
+        video_artist=$(echo "$status" | grep -oP "artist=\"\K[^\"]+")
         # Avoid repeating the API search unless the playing video has changed.
         if has_variable_changed "$video_title $video_artist"; then
           video_id="$(get_videoID_by_API)" && prev_video_id="$video_id"
