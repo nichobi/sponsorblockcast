@@ -12,9 +12,8 @@ if [ "$sysname" = "Darwin" ]; then
   if which ggrep gsed > /dev/null; then
     alias grep=ggrep
     alias sed=gsed
-    shopt -s expand_aliases
   else
-    echo >&2 $0 requires GNU grep and sed. Run \`brew install grep gnu-sed\`.
+    echo >&2 "$0" requires GNU grep and sed. Run \`brew install grep gnu-sed\`.
     exit 1
   fi
 fi
