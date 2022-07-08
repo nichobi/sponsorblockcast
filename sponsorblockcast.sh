@@ -7,6 +7,17 @@ SBCSCANINTERVAL="${SBCSCANINTERVAL:-300}"
 SBCDIR="${SBCDIR:-/tmp/sponsorblockcast}"
 SBCCATEGORIES="${SBCCATEGORIES:-sponsor}"
 
+sysname=$(uname -s)
+if [ "$sysname" = "Darwin" ]; then
+  if which ggrep gsed > /dev/null; then
+    alias grep=ggrep
+    alias sed=gsed
+  else
+    echo >&2 "$0" requires GNU grep and sed. Run \`brew install grep gnu-sed\`.
+    exit 1
+  fi
+fi
+
 # Format categories for curl by quoting words, replacing spaces with commas and surrounding with brackets
 categories="[$(echo "$SBCCATEGORIES" | sed 's/[^ ]\+/"&"/g;s/\s/,/g')]"
 
