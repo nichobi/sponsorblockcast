@@ -22,3 +22,4 @@ LABEL Description="Container to run go-chromecast with some preset ENVs, run as 
 ADD sponsorblockcast.sh /usr/bin/sponsorblockcast
 
 CMD /usr/bin/sponsorblockcast
+
