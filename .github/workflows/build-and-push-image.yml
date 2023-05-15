@@ -19,7 +19,7 @@ jobs:
         id: check_release
         run: |
           LATEST_RELEASE=$(curl -sL https://api.github.com/repos/vishen/go-chromecast/releases/latest | jq -r '.tag_name')
-          echo "::set-output name=release::$LATEST_RELEASE"
+          echo "release=$LATEST_RELEASE" >> $GITHUB_ENV
 
       - name: Update CURRENT_RELEASE
         if: steps.check_release.outputs.release != env.CURRENT_RELEASE
