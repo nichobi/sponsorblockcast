@@ -1,7 +1,7 @@
 version: '3.6'
 services:
   sponsorblockcast:
-    image: ghcr.io/nichobi/sponsorblockcast:latest
+    image: ghcr.io/bruvv/sponsorblockcast:latest
     network_mode: host
     environment:
       SBCPOLLINTERVAL: 1
@@ -11,3 +11,8 @@ services:
     cap_add: 
       - NET_ADMIN
     restart: always
+    healthcheck:
+      test: ["CMD", "go-chromecast", "ls"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
