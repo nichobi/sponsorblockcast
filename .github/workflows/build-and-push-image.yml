@@ -1,27 +1,42 @@
 name: build-and-push-image
 
 on:
+  schedule:
+    - cron: '0 0 * * *'  # Schedule to run once every day
   push:
     branches:
       - main
+
+env:
+  CURRENT_RELEASE: v0.3.1
 
 jobs:
   build-multi-arch-image:
     name: Build multi-arch Docker image
     runs-on: ubuntu-latest
     steps:
+      - name: Check for new release
+        id: check_release
+        run: |
+          LATEST_RELEASE=$(curl -sL https://api.github.com/repos/vishen/go-chromecast/releases/latest | jq -r '.tag_name')
+          echo "::set-output name=release::$LATEST_RELEASE"
+
       - name: Checkout
+        if: steps.check_release.outputs.release != env.CURRENT_RELEASE
         uses: actions/checkout@v2
 
       - name: Set up QEMU
+        if: steps.check_release.outputs.release != env.CURRENT_RELEASE
         uses: docker/setup-qemu-action@v1
         
       - name: Set up Docker Buildx
+        if: steps.check_release.outputs.release != env.CURRENT_RELEASE
         uses: docker/setup-buildx-action@v1
         with:
           install: true
 
       - name: Login to GitHub Container Registry
+        if: steps.check_release.outputs.release != env.CURRENT_RELEASE
         uses: docker/login-action@v1 
         with:
           registry: ghcr.io
@@ -29,6 +44,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push
+        if: steps.check_release.outputs.release != env.CURRENT_RELEASE
         uses: docker/build-push-action@v2
         with:
           push: true 
