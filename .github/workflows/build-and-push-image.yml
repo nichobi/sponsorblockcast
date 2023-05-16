@@ -36,7 +36,7 @@ jobs:
           else
             echo "New version available. Updating Dockerfile."
             echo "VERSION_CHANGED=true" >> $GITHUB_ENV
-            sed -i "s/ENV CHROMECASTGOVERSION=.*/ENV CHROMECASTGOVERSION=${{ env.LATEST_CHROMECASTGOVERSION }}/" ./Dockerfile
+            sed -i "s/ENV CHROMECASTGOVERSION=.*/ENV CHROMECASTGOVERSION=${{ env.LATEST_CHROMECASTGOVERSION }}/" ./build/Dockerfile
           fi
       
       - name: Upload modified Dockerfile as artifact
@@ -76,6 +76,6 @@ jobs:
           push: true 
           tags: ghcr.io/${{ github.repository }}:latest
           platforms: linux/amd64,linux/386,linux/arm64,linux/arm/v7,linux/arm/v6
-          dockerfile: ./Dockerfile
+          dockerfile: ./build/Dockerfile
         if: ${{ env.VERSION_CHANGED == 'true' }}
 
