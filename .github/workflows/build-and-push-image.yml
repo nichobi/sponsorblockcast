@@ -18,7 +18,7 @@ jobs:
       - name: Get current go-chromecast version from Dockerfile
         id: get-current-version
         run: |
-          CURRENT_CHROMECASTGOVERSION=$(grep -oP '(?<=CHROMECASTGOVERSION=).*' Dockerfile)
+          CURRENT_CHROMECASTGOVERSION=$(grep -oP '(?<=CHROMECASTGOVERSION=).*' ./Dockerfile)
           echo "CURRENT_CHROMECASTGOVERSION=$CURRENT_CHROMECASTGOVERSION" >> $GITHUB_ENV
 
       - name: Get latest go-chromecast version
@@ -39,13 +39,6 @@ jobs:
             sed -i "s/ENV CHROMECASTGOVERSION=.*/ENV CHROMECASTGOVERSION=${{ env.LATEST_CHROMECASTGOVERSION }}/" ./Dockerfile
           fi
       
-      - name: Upload modified Dockerfile as artifact
-        uses: actions/upload-artifact@v3
-        if: ${{ env.VERSION_CHANGED == 'true' }}
-        with:
-          name: Dockerfile
-          path: ./Dockerfile
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2.1.0
         if: ${{ env.VERSION_CHANGED == 'true' }}
@@ -64,18 +57,12 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
         if: ${{ env.VERSION_CHANGED == 'true' }}
 
-      - name: Download modified Dockerfile artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: Dockerfile
-        if: ${{ env.VERSION_CHANGED == 'true' }}
-
       - name: Build and push
-        uses:  docker/build-push-action@v4.0.0
+        uses: docker/build-push-action@v4.0.0
         with:
           push: true 
           tags: ghcr.io/${{ github.repository }}:latest
           platforms: linux/amd64,linux/386,linux/arm64,linux/arm/v7,linux/arm/v6
-          dockerfile: /build/Dockerfile
+          dockerfile: Dockerfile
         if: ${{ env.VERSION_CHANGED == 'true' }}
 
