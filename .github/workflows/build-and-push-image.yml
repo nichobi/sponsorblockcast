@@ -36,7 +36,7 @@ jobs:
           else
             echo "New version available. Updating Dockerfile."
             echo "VERSION_CHANGED=true" >> $GITHUB_ENV
-            sed -i "s/ENV CHROMECASTGOVERSION=.*/ENV CHROMECASTGOVERSION=${{ env.LATEST_CHROMECASTGOVERSION }}/" /build/Dockerfile
+            sed -i "s/ENV CHROMECASTGOVERSION=.*/ENV CHROMECASTGOVERSION=${{ env.LATEST_CHROMECASTGOVERSION }}/" ./Dockerfile
           fi
       
       - name: Upload modified Dockerfile as artifact
