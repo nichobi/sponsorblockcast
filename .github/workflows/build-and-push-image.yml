@@ -38,7 +38,6 @@ jobs:
             echo "version_changed=true" >> $GITHUB_ENV
             sed -i "s/ENV CHROMECASTGOVERSION=.*/ENV CHROMECASTGOVERSION=${{ env.LATEST_CHROMECASTGOVERSION }}/" Dockerfile
           fi
-          cat Dockerfile
           echo "PREVIOUS_CHROMECASTGOVERSION=${{ env.CURRENT_CHROMECASTGOVERSION }}" >> $GITHUB_ENV
 
       - name: Set up QEMU
