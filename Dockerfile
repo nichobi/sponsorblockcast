@@ -5,7 +5,7 @@ FROM alpine:latest
 ARG TARGETOS
 ARG TARGETARCH
 ARG TARGETVARIANT
-ENV CHROMECASTGOVERSION=v0.2.12
+ENV CHROMECASTGOVERSION=v0.3.1
 
 RUN apk --no-cache add jq bc grep curl \
     && GC_URL=`wget https://api.github.com/repos/vishen/go-chromecast/releases/tags/${CHROMECASTGOVERSION} -O - | jq -r '.assets[].browser_download_url' | grep ${TARGETOS}_${TARGETARCH}${TARGETVARIANT}` \
