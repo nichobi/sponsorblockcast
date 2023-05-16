@@ -1,4 +1,4 @@
-name: build-and-push-image
+name: Check for new Go Chromecast version
 
 on:
   schedule:
