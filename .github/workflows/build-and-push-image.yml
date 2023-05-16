@@ -43,8 +43,8 @@ jobs:
         uses: actions/upload-artifact@v3
         if: ${{ env.VERSION_CHANGED == 'true' }}
         with:
-          name: modified-dockerfile
-          path: ./modified-dockerfile
+          name: Dockerfile
+          path: ./Dockerfile
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2.1.0
@@ -67,7 +67,7 @@ jobs:
       - name: Download modified Dockerfile artifact
         uses: actions/download-artifact@v3
         with:
-          name: modified-dockerfile
+          name: Dockerfile
         if: ${{ env.VERSION_CHANGED == 'true' }}
 
       - name: Build and push
