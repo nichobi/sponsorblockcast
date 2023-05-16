@@ -8,7 +8,7 @@ on:
       - main
 
 env:
-  CURRENT_RELEASE: v0.2.12
+  CURRENT_RELEASE: v0.3.1
 
 jobs:
   build-multi-arch-image:
@@ -26,17 +26,17 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up QEMU
-        if: steps.check_release.outputs.release != env.CURRENT_RELEASE
+        if: env.LATEST_RELEASE != env.CURRENT_RELEASE
         uses: docker/setup-qemu-action@v1
         
       - name: Set up Docker Buildx
-        if: steps.check_release.outputs.release != env.CURRENT_RELEASE
+        if: env.LATEST_RELEASE != env.CURRENT_RELEASE
         uses: docker/setup-buildx-action@v1
         with:
           install: true
 
       - name: Login to GitHub Container Registry
-        if: steps.check_release.outputs.release != env.CURRENT_RELEASE
+        if: env.LATEST_RELEASE != env.CURRENT_RELEASE
         uses: docker/login-action@v1 
         with:
           registry: ghcr.io
@@ -44,7 +44,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push
-        if: steps.check_release.outputs.release != env.CURRENT_RELEASE
+        if: env.LATEST_RELEASE != env.CURRENT_RELEASE
         uses: docker/build-push-action@v2
         with:
           push: true 
