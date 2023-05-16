@@ -38,7 +38,13 @@ jobs:
             echo "VERSION_CHANGED=true" >> $GITHUB_ENV
             sed -i "s/ENV CHROMECASTGOVERSION=.*/ENV CHROMECASTGOVERSION=${{ env.LATEST_CHROMECASTGOVERSION }}/" ./Dockerfile
           fi
-          echo "PREVIOUS_CHROMECASTGOVERSION=${{ env.CURRENT_CHROMECASTGOVERSION }}" >> $GITHUB_ENV
+      
+      - name: Upload modified Dockerfile as artifact
+        uses: actions/upload-artifact@v3
+        if: ${{ env.VERSION_CHANGED == 'true' }}
+        with:
+          name: modified-dockerfile
+          path: ./modified-dockerfile
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2.1.0
