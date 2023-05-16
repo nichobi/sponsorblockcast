@@ -8,7 +8,7 @@ on:
       - main
 
 env:
-  CURRENT_RELEASE: v0.3.1
+  CURRENT_RELEASE: v0.2.12
 
 jobs:
   build-multi-arch-image:
