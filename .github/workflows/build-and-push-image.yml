@@ -15,13 +15,40 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Get current go-chromecast version from Dockerfile
+        id: get-current-version
+        run: |
+          CURRENT_CHROMECASTGOVERSION=$(grep -oP '(?<=CHROMECASTGOVERSION=).*' Dockerfile)
+          echo "CURRENT_CHROMECASTGOVERSION=$CURRENT_CHROMECASTGOVERSION" >> $GITHUB_ENV
+
+      - name: Get latest go-chromecast version
+        id: get-latest-version
+        run: |
+          LATEST_VERSION=$(curl -s "https://api.github.com/repos/vishen/go-chromecast/releases/latest" | jq -r '.tag_name')
+          echo "LATEST_CHROMECASTGOVERSION=$LATEST_VERSION" >> $GITHUB_ENV
+
+      - name: Check if version is newer and update Dockerfile
+        id: check-version-and-update-dockerfile
+        run: |
+          if [[ "${{ env.CURRENT_CHROMECASTGOVERSION }}" == "${{ env.LATEST_CHROMECASTGOVERSION }}" ]]; then
+            echo "No new version available. Skipping build."
+            echo "::set-output name=version_changed::false"
+          else
+            echo "New version available. Updating Dockerfile."
+            echo "::set-output name=version_changed::true"
+            sed -i "s/ENV CHROMECASTGOVERSION=.*/ENV CHROMECASTGOVERSION=${{ env.LATEST_CHROMECASTGOVERSION }}/" Dockerfile
+          
+          echo "PREVIOUS_CHROMECASTGOVERSION=${{ env.CURRENT_CHROMECASTGOVERSION }}" >> $GITHUB_ENV
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
+        if: steps.check-version-and-update-dockerfile.outputs.version_changed == 'true'
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
         with:
           install: true
+        if: steps.check-version-and-update-dockerfile.outputs.version_changed == 'true'
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1 
@@ -29,27 +56,12 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Get current go-chromecast version
-        id: get-chromecast-version
-        run: |
-          CHROMECASTGOVERSION=$(wget -qO- https://api.github.com/repos/vishen/go-chromecast/releases/latest | jq -r '.tag_name')
-          echo "CHROMECASTGOVERSION=$CHROMECASTGOVERSION" >> $GITHUB_ENV
-
-      - name: Check if version is newer
-        id: check-version
-        run: |
-          if [[ "${{ env.CHROMECASTGOVERSION }}" == "${{ secrets.CURRENT_CHROMECASTGOVERSION }}" ]]; then
-            echo "::set-output name=build_required::false"
-          else
-            echo "::set-output name=build_required::true"
-          fi
+        if: steps.check-version-and-update-dockerfile.outputs.version_changed == 'true'
 
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
-          push: ${{ steps.check-version.outputs.build_required }}
+          push: true 
           tags: ghcr.io/${{ github.repository }}:latest
           platforms: linux/amd64,linux/386,linux/arm64,linux/arm/v7,linux/arm/v6
-        env:
-          CHROMECASTGOVERSION: ${{ env.CHROMECASTGOVERSION }}
+        if: steps.check-version-and-update-dockerfile.outputs.version_changed == 'true'
