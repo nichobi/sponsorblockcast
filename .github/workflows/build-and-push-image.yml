@@ -19,11 +19,10 @@ jobs:
         id: check_release
         run: |
           LATEST_RELEASE=$(curl -sL https://api.github.com/repos/vishen/go-chromecast/releases/latest | jq -r '.tag_name')
-          echo "release=$LATEST_RELEASE" >> $GITHUB_ENV
-          echo "CURRENT_RELEASE=${{ steps.check_release.outputs.release }}" >> $GITHUB_ENV
-
+          echo "LATEST_RELEASE=$LATEST_RELEASE" >> $GITHUB_ENV
+  
       - name: Checkout
-        if: steps.check_release.outputs.release != env.CURRENT_RELEASE
+        if: env.LATEST_RELEASE != env.CURRENT_RELEASE
         uses: actions/checkout@v2
 
       - name: Set up QEMU
