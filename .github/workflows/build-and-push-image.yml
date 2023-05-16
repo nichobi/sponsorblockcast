@@ -7,57 +7,49 @@ on:
     branches:
       - main
 
-env:
-  CURRENT_RELEASE_FILE: release.txt
-
 jobs:
   build-multi-arch-image:
     name: Build multi-arch Docker image
     runs-on: ubuntu-latest
     steps:
-      - name: Check for new release
-        id: check_release
-        run: |
-          LATEST_RELEASE=$(curl -sL https://api.github.com/repos/vishen/go-chromecast/releases/latest | jq -r '.tag_name')
-          echo "LATEST_RELEASE=$LATEST_RELEASE" >> $GITHUB_ENV
-          touch release.txt
-          CURRENT_RELEASE=$(cat $CURRENT_RELEASE_FILE)
-          echo "CURRENT_RELEASE=$CURRENT_RELEASE"
-  
-          if [[ "$LATEST_RELEASE" != "$CURRENT_RELEASE" ]]; then
-            echo "$LATEST_RELEASE" > $CURRENT_RELEASE_FILE
-            echo "Updated CURRENT_RELEASE to $LATEST_RELEASE"
-          else
-            echo "No new release found. CURRENT_RELEASE=$CURRENT_RELEASE"
-          fi
-      
       - name: Checkout
-        if: env.LATEST_RELEASE != env.CURRENT_RELEASE
         uses: actions/checkout@v2
 
       - name: Set up QEMU
-        if: env.LATEST_RELEASE != env.CURRENT_RELEASE
         uses: docker/setup-qemu-action@v1
-        
+
       - name: Set up Docker Buildx
-        if: env.LATEST_RELEASE != env.CURRENT_RELEASE
         uses: docker/setup-buildx-action@v1
         with:
           install: true
 
       - name: Login to GitHub Container Registry
-        if: env.LATEST_RELEASE != env.CURRENT_RELEASE
         uses: docker/login-action@v1 
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Get current go-chromecast version
+        id: get-chromecast-version
+        run: |
+          CHROMECASTGOVERSION=$(wget -qO- https://api.github.com/repos/vishen/go-chromecast/releases/latest | jq -r '.tag_name')
+          echo "CHROMECASTGOVERSION=$CHROMECASTGOVERSION" >> $GITHUB_ENV
+
+      - name: Check if version is newer
+        id: check-version
+        run: |
+          if [[ "${{ env.CHROMECASTGOVERSION }}" == "${{ secrets.CURRENT_CHROMECASTGOVERSION }}" ]]; then
+            echo "::set-output name=build_required::false"
+          else
+            echo "::set-output name=build_required::true"
+          fi
+
       - name: Build and push
-        if: env.LATEST_RELEASE != env.CURRENT_RELEASE
         uses: docker/build-push-action@v2
         with:
-          push: true 
+          push: ${{ steps.check-version.outputs.build_required }}
           tags: ghcr.io/${{ github.repository }}:latest
           platforms: linux/amd64,linux/386,linux/arm64,linux/arm/v7,linux/arm/v6
-
+        env:
+          CHROMECASTGOVERSION: ${{ env.CHROMECASTGOVERSION }}
