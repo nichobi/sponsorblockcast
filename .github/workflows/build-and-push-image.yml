@@ -8,7 +8,7 @@ on:
       - main
 
 env:
-  CURRENT_RELEASE: v0.2.12
+  CURRENT_RELEASE_FILE: release.txt
 
 jobs:
   build-multi-arch-image:
@@ -20,9 +20,17 @@ jobs:
         run: |
           LATEST_RELEASE=$(curl -sL https://api.github.com/repos/vishen/go-chromecast/releases/latest | jq -r '.tag_name')
           echo "LATEST_RELEASE=$LATEST_RELEASE" >> $GITHUB_ENV
+
+          CURRENT_RELEASE=$(cat $CURRENT_RELEASE_FILE)
+          echo "CURRENT_RELEASE=$CURRENT_RELEASE"
+  
           if [[ "$LATEST_RELEASE" != "$CURRENT_RELEASE" ]]; then
-            echo "CURRENT_RELEASE=$LATEST_RELEASE" >> $GITHUB_ENV
-          fi  
+            echo "$LATEST_RELEASE" > $CURRENT_RELEASE_FILE
+            echo "Updated CURRENT_RELEASE to $LATEST_RELEASE"
+          else
+            echo "No new release found. CURRENT_RELEASE=$CURRENT_RELEASE"
+          fi
+      
       - name: Checkout
         if: env.LATEST_RELEASE != env.CURRENT_RELEASE
         uses: actions/checkout@v2
