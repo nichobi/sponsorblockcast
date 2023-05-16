@@ -31,13 +31,14 @@ jobs:
         id: check-version-and-update-dockerfile
         run: |
           if [[ "${{ env.CURRENT_CHROMECASTGOVERSION }}" == "${{ env.LATEST_CHROMECASTGOVERSION }}" ]]; then
-            echo "No new version available. Skipping build."
+            echo "No new version available. Skipping Dockerfile update."
             echo "::set-output name=version_changed::false"
           else
             echo "New version available. Updating Dockerfile."
             echo "::set-output name=version_changed::true"
             sed -i "s/ENV CHROMECASTGOVERSION=.*/ENV CHROMECASTGOVERSION=${{ env.LATEST_CHROMECASTGOVERSION }}/" Dockerfile
-          
+          fi
+
           echo "PREVIOUS_CHROMECASTGOVERSION=${{ env.CURRENT_CHROMECASTGOVERSION }}" >> $GITHUB_ENV
 
       - name: Set up QEMU
