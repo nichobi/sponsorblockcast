@@ -1,15 +1,27 @@
 name: build-and-push-image
 
 on:
+  schedule:
+    - cron: '0 0 * * *'  # Schedule to run once every day
   push:
     branches:
       - main
+
+env:
+  CURRENT_RELEASE: v0.3.1
 
 jobs:
   build-multi-arch-image:
     name: Build multi-arch Docker image
     runs-on: ubuntu-latest
     steps:
+      - name: Check for new release
+        id: check_release
+        run: |
+          LATEST_RELEASE=$(curl -sL https://api.github.com/repos/vishen/go-chromecast/releases/latest | jq -r '.tag_name')
+          echo "release=$LATEST_RELEASE" >> $GITHUB_ENV
+          echo "CURRENT_RELEASE=${{ steps.check_release.outputs.release }}" >> $GITHUB_ENV
+
       - name: Checkout
         uses: actions/checkout@v3
 
