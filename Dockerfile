@@ -7,8 +7,8 @@ ARG TARGETARCH
 ARG TARGETVARIANT
 ENV CHROMECASTGOVERSION=v0.2.12
 
-RUN apk --no-cache add jq bc grep curl
-RUN GC_URL=`wget https://api.github.com/repos/vishen/go-chromecast/releases/tags/${CHROMECASTGOVERSION} -O - | jq -r '.assets[].browser_download_url' | grep ${TARGETOS}_${TARGETARCH}${TARGETVARIANT}` \
+RUN apk --no-cache add jq bc grep curl \
+    && GC_URL=`wget https://api.github.com/repos/vishen/go-chromecast/releases/tags/${CHROMECASTGOVERSION} -O - | jq -r '.assets[].browser_download_url' | grep ${TARGETOS}_${TARGETARCH}${TARGETVARIANT}` \
     && wget $GC_URL -O /root/go-chromecast.tgz \
     && tar xzf /root/go-chromecast.tgz -C /usr/bin \
     && rm -rf /root/* \
