@@ -32,13 +32,13 @@ jobs:
         run: |
           if [[ "${{ env.CURRENT_CHROMECASTGOVERSION }}" == "${{ env.LATEST_CHROMECASTGOVERSION }}" ]]; then
             echo "No new version available. Skipping Dockerfile update."
-            echo "::set-output name=version_changed::false"
+            echo "version_changed=false" >> $GITHUB_ENV
           else
             echo "New version available. Updating Dockerfile."
-            echo "::set-output name=version_changed::true"
+            echo "version_changed=true" >> $GITHUB_ENV
             sed -i "s/ENV CHROMECASTGOVERSION=.*/ENV CHROMECASTGOVERSION=${{ env.LATEST_CHROMECASTGOVERSION }}/" Dockerfile
           fi
-
+          cat Dockerfile
           echo "PREVIOUS_CHROMECASTGOVERSION=${{ env.CURRENT_CHROMECASTGOVERSION }}" >> $GITHUB_ENV
 
       - name: Set up QEMU
