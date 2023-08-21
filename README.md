@@ -1,3 +1,8 @@
+# Archived
+`sponsorblockcast` has been superseded by [CastSponsorSkip](https://github.com/gabe565/CastSponsorSkip), written by [gabe565](https://github.com/gabe565).
+I recommend moving over to it for improved performance and privacy.
+`sponsorblockcast` will no longer be maintained.
+
 # sponsorblockcast
 A POSIX shell script that skips sponsored YouTube content and skippable ads on all local Chromecasts, using the [SponsorBlock](https://github.com/ajayyy/SponsorBlock) API. It was inspired by [CastBlock](https://github.com/stephen304/castblock) but written from scratch to avoid some of its pitfalls (see [Differences from CastBlock](#differences-from-castblock)).
 
